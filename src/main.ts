@@ -29,7 +29,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
+  SwaggerModule.setup('api-docs', app, document, {
     customSiteTitle: 'TodoList API Documentation',
     customfavIcon: 'https://nestjs.com/img/logo_text.svg',
     customJs: [
@@ -39,6 +39,8 @@ async function bootstrap() {
     customCssUrl: [
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
     ],
+    jsonDocumentUrl: 'api-docs-json',
+    yamlDocumentUrl: 'api-docs-yaml',
   });
 
   await app.listen(process.env.PORT ?? 8080);
