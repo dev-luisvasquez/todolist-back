@@ -2,17 +2,16 @@ import { Injectable, ConflictException, UnauthorizedException, BadRequestExcepti
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
-import { UserDto } from 'src/users/dto/user.dto';
+import { CreateUserDto } from 'src/users/dto/user.dto';
 import { sendEmail } from 'src/utils/email.util';
 import * as jwt from 'jsonwebtoken';
-import { last } from 'cheerio/dist/commonjs/api/traversing';
 
 
 @Injectable()
 export class AuthService {
     constructor(private readonly prisma: PrismaService, private readonly usersService: UsersService) { }
 
-    async SignUp(userData: { userDto: UserDto }) {
+    async SignUp(userData: { userDto: CreateUserDto }) {
         try {
             const user = await this.prisma.users.findUnique({
                 where: { email: userData.userDto.email }
