@@ -7,9 +7,20 @@ export class TaskService {
     constructor(private readonly prisma: PrismaService) { }
 
     //GETs Tasks
-    async getAllTasks() {
+    async getAllTasksByUser(userId: string, state?: 'pending' | 'in_progress' | 'completed') {
         try {
-            return await this.prisma.tasks.findMany();
+            const whereCondition: any = {
+                user_id: userId,
+            };
+
+            // Si se proporciona un estado, agregarlo al filtro
+            if (state) {
+                whereCondition.state = state;
+            }
+
+            return await this.prisma.tasks.findMany({
+                where: whereCondition,
+            });
         } catch (error) {
             console.error('Error getting all tasks:', error);
             throw new HttpException('Could not retrieve tasks', HttpStatus.INTERNAL_SERVER_ERROR);
