@@ -58,7 +58,7 @@ export class AuthService {
             const token = jwt.sign(payload, secret, { expiresIn: '1h' });
             const refreshToken = jwt.sign(payload, secret, { expiresIn: '7d' });
 
-            return { user, accessToken: token, refreshToken };
+            return { user, access_Token: token, refresh_Token: refreshToken };
         } catch (error) {
             throw error instanceof UnauthorizedException ? error : new BadRequestException(error.message);
         }

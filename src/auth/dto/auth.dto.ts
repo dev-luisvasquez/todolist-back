@@ -47,7 +47,13 @@ export class LoginResponseDto {
         description: 'Token JWT de acceso',
         example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
     })
-    access_token: string;
+    access_Token: string;
+
+     @ApiProperty({
+        description: 'Token JWT de refresco que dura 7 días',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+    })
+    refresh_Token: string;
 
     @ApiProperty({
         description: 'Información del usuario',
