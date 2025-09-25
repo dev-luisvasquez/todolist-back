@@ -29,7 +29,7 @@ export class AuthService {
             const emailUrl = await sendEmail({
                 to: newUser.email,
                 subject: 'Bienvenido a TodoList',
-                templatePath: 'src/utils/email-templates/signup.html',
+                templatePath: 'src/utils/email/signup.html',
                 variables: { name: newUser.name, lastName: newUser.last_name }
             });
             return { user: newUser, emailPreviewUrl: emailUrl };
@@ -52,8 +52,14 @@ export class AuthService {
                 throw new UnauthorizedException('Usuario o contraseña incorrectos');
             }
 
-            // Generar el token de acceso
-            const payload = { userId: user.id, email: user.email };
+            // Generar el token de acceso con información más completa
+            const payload = { 
+                userId: user.id, 
+                email: user.email,
+                name: user.name,
+                lastName: user.last_name,
+                sub: user.id // Standard JWT claim
+            };
             const secret = process.env.JWT_SECRET || 'default_secret';
             const token = jwt.sign(payload, secret, { expiresIn: '1h' });
             const refreshToken = jwt.sign(payload, secret, { expiresIn: '7d' });
@@ -67,14 +73,31 @@ export class AuthService {
     async RefreshTokenValidate(refreshToken: string) {
         try {
             const secret = process.env.JWT_SECRET || 'default_secret';
-            const decoded = jwt.verify(refreshToken, secret) as { userId: string; email: string };
-            // Generar nuevos tokens
-            const newPayload = { userId: decoded.userId, email: decoded.email };
+            const decoded = jwt.verify(refreshToken, secret) as { userId: string; email: string; name?: string; lastName?: string };
+            
+            // Obtener información actualizada del usuario
+            const user = await this.prisma.users.findUnique({
+                where: { id: decoded.userId }
+            });
+            
+            if (!user) {
+                throw new UnauthorizedException('User not found');
+            }
+            
+            // Generar nuevos tokens con información completa
+            const newPayload = { 
+                userId: user.id, 
+                email: user.email,
+                name: user.name,
+                lastName: user.last_name,
+                sub: user.id
+            };
             const newAccessToken = jwt.sign(newPayload, secret, { expiresIn: '1h' });
             const newRefreshToken = jwt.sign(newPayload, secret, { expiresIn: '7d' });
             return {
-                accessToken: newAccessToken,
-                refreshToken: newRefreshToken
+                access_Token: newAccessToken,
+                refresh_Token: newRefreshToken,
+                user: user
             };
         } catch (error) {
             throw new UnauthorizedException('Invalid token');
@@ -127,7 +150,7 @@ export class AuthService {
             const secret = process.env.JWT_SECRET || 'default_secret';
             const token = jwt.sign({ userId: user.id, email: user.email }, secret, { expiresIn: '15m' });
             // Construir enlace para frontend
-            const recoveryUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+            const recoveryUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
             // Enviar correo con el enlace
             await sendEmail({
                 to: email,

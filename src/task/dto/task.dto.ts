@@ -62,6 +62,12 @@ export class TaskDto {
         example: '2023-01-02T00:00:00.000Z'
     })
     updated_at?: Date;
+
+    @ApiPropertyOptional({
+        description: 'Fecha de finalización de la tarea',
+        example: '2023-01-01T00:00:00.000Z'
+    })
+    completed_at?: Date;
 }
 
 export class CreateTaskDto {
