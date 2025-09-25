@@ -18,6 +18,7 @@ async function bootstrap() {
       'Content-Type',
       'Authorization',
       'X-Requested-With',
+      'x-refresh-token',
       'Accept',
       'Origin',
     ],
