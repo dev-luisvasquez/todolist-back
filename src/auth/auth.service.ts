@@ -64,7 +64,9 @@ export class AuthService {
             const token = jwt.sign(payload, secret, { expiresIn: '1h' });
             const refreshToken = jwt.sign(payload, secret, { expiresIn: '7d' });
 
-            return { user, access_Token: token, refresh_Token: refreshToken };
+            // Excluir la contraseña del objeto user antes de devolverlo
+            const { password, ...userWithoutPassword } = user;
+            return { user: userWithoutPassword, access_Token: token, refresh_Token: refreshToken };
         } catch (error) {
             throw error instanceof UnauthorizedException ? error : new BadRequestException(error.message);
         }

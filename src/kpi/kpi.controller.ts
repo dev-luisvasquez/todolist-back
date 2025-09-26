@@ -13,11 +13,11 @@ import {
     ApiQuery
 } from '@nestjs/swagger';
 
-@ApiTags('KPI')
+@ApiTags('kpi')
 @ApiBearerAuth()
 @Controller('kpi')
 export class KpiController {
-    constructor(private readonly kpiService: KpiService) {}
+    constructor(private readonly kpiService: KpiService) { }
 
     @Get('task-distribution')
     @ApiOperation({
@@ -51,10 +51,10 @@ export class KpiController {
         return this.kpiService.kpiDistributionTaskForState(userId);
     }
 
-    @Get('tasks-by-priority')
+    @Get('tasks-pending-by-priority')
     @ApiOperation({
-        summary: 'Obtener distribución de tareas por prioridad',
-        description: 'Devuelve la cantidad de tareas agrupadas por su nivel de prioridad para el usuario autenticado.'
+        summary: 'Obtener distribución de tareas pendientes por prioridad',
+        description: 'Devuelve la cantidad de tareas pendientes agrupadas por su nivel de prioridad para el usuario autenticado.'
     })
     @ApiResponse({
         status: 200,
@@ -73,7 +73,7 @@ export class KpiController {
     @ApiBadRequestResponse({ description: 'Token de autorización inválido' })
     async getTasksByPriority(@Request() req: AuthenticatedRequest) {
         const userId = req.user.id;
-        return this.kpiService.kpiTasksByPriority(userId);
+        return this.kpiService.kpiTasksPendingByPriority(userId);
     }
 
     @Get('completed-this-month')

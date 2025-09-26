@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { UpdateUserDto, CreateUserDto } from './dto/user.dto';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createUser(data: CreateUserDto) {
     try {
@@ -15,8 +16,9 @@ export class UsersService {
           name: data.name,
           last_name: data.last_name,
           email: data.email,
-          birthday: data.birthday || null,
+          birthday: data.birthday !== undefined ? data.birthday : undefined,
           password: data.password,
+          avatar: data.avatar || 'https://res.cloudinary.com/dybx8epyl/image/upload/v1758838963/avatar/azzr32udriidmnar14p7.jpg', // Avatar por defecto
         },
       });
     } catch (error) {
@@ -26,15 +28,22 @@ export class UsersService {
 
   async updatedUserById(id: string, data: UpdateUserDto) {
     try {
+      const updateData: UpdateUserDto = {
+        name: data.name,
+        last_name: data.last_name,
+        email: data.email,
+        birthday: data.birthday !== undefined ? data.birthday : undefined,
+        updated_at: DateTime.now().toJSDate(),
+      };
+
+      // Solo incluir avatar si está presente en los datos
+      if (data.avatar !== undefined) {
+        updateData.avatar = data.avatar;
+      }
+
       return await this.prisma.users.update({
         where: { id },
-        data: {
-          name: data.name,
-          last_name: data.last_name,
-          email: data.email,
-          birthday: data.birthday || null,
-          updated_at: new Date(),
-        },
+        data: updateData,
       });
     } catch (error) {
       throw new Error(`Error updating user: ${error.message}`);

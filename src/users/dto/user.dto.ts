@@ -8,6 +8,12 @@ export class UserDto {
     id: string;
 
     @ApiProperty({
+        description: 'Avatar del usuario (URL de la imagen)',
+        example: 'https://example.com/avatar.jpg'
+    })
+    avatar?: string;
+
+    @ApiProperty({
         description: 'Nombre del usuario',
         example: 'Juan'
     })
@@ -78,8 +84,23 @@ export class CreateUserDto extends OmitType(UserDto, ['id', 'created_at', 'updat
         minLength: 6
     })
     password: string;
+
+    @ApiPropertyOptional({
+        description: 'Avatar del usuario (URL de la imagen)',
+        example: 'https://example.com/avatar.jpg'
+    })
+    avatar?: string;
+
+   
+
 }
 
-export class UpdateUserDto extends PartialType(OmitType(CreateUserDto, ['password'] as const)) {}
+export class UpdateUserDto extends PartialType(OmitType(UserDto, ['password'] as const)) {
+    @ApiPropertyOptional({
+        description: 'Avatar del usuario (URL de la imagen)',
+        example: 'https://example.com/avatar.jpg'
+    })
+    avatar?: string;
+}
 
 export class UserResponseDto extends OmitType(UserDto, ['password'] as const) {}

@@ -6,6 +6,7 @@ import { TaskModule } from './task/task.module';
 import { PrismaModule } from './prisma/prisma.module'; 
 import { AuthModule } from './auth/auth.module';
 import { KpiModule } from './kpi/kpi.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { KpiModule } from './kpi/kpi.module';
     UsersModule, 
     TaskModule, 
     AuthModule, 
-    KpiModule
+    KpiModule, 
+    FilesModule
   ],
   controllers: [AppController],
   providers: [AppService], 

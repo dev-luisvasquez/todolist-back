@@ -32,12 +32,13 @@ export class KpiService {
         };
     }
 
-    async kpiTasksByPriority(userId: string) {
+    async kpiTasksPendingByPriority(userId: string) {
         // KPI adicional: distribución por prioridad
         const result = await this.prisma.tasks.groupBy({
             by: ['priority'],
             where: {
-                user_id: userId
+                user_id: userId,
+                state: 'pending'
             },
             _count: {
                 priority: true

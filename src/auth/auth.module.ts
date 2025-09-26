@@ -1,11 +1,11 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthMiddleware } from './auth.middleware';
 
 @Module({
-    imports: [UsersModule],
+    imports: [forwardRef(() => UsersModule)],
     controllers: [AuthController],
     providers: [AuthService],
     exports: [AuthService],
