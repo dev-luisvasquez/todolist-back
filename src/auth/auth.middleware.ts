@@ -8,28 +8,31 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly authService: AuthService) {}
 
   async use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization'];
+    const authHeader = (req.headers['authorization'] || req.headers['Authorization']) as string | undefined;
     if (!authHeader) {
-      throw new UnauthorizedException('Authorization header not found');
+      throw new UnauthorizedException('Encabezado Authorization no encontrado');
     }
-    
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      throw new UnauthorizedException('Token not found');
+
+    const parts = authHeader.trim().split(/\s+/);
+    const scheme = parts[0];
+    const token = parts[1];
+    if (!/^Bearer$/i.test(scheme) || !token) {
+      throw new UnauthorizedException('Formato de Authorization inválido');
     }
-    
+
     try {
-      // Validar el token y obtener el usuario
       const user = await this.authService.validateToken(token);
-      if (!user) {
-        throw new UnauthorizedException('User not valid');
+      if (!user?.id) {
+        throw new UnauthorizedException('Usuario no válido');
       }
-      
-      // Agregar el usuario al request con tipado seguro
-      req.user = user;
-      next();
-    } catch (error) {
-      throw new UnauthorizedException('Token invalid or expired');
+
+      // No exponer password en el request
+      const { password, ...safeUser } = user as any;
+      req.user = safeUser;
+
+      return next();
+    } catch {
+      throw new UnauthorizedException('Token inválido o expirado');
     }
   }
 }

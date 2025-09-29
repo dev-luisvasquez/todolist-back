@@ -110,35 +110,55 @@ export class AuthService {
         try {
             const secret = process.env.JWT_SECRET || 'default_secret';
             const decoded = jwt.verify(token, secret) as { userId: string; email: string };
-            // Buscar el usuario en la base de datos
             const user = await this.prisma.users.findUnique({
-                where: { id: decoded.userId }
+                where: { id: decoded.userId },
+                select: { id: true, email: true, name: true, last_name: true, birthday: true, created_at: true, updated_at: true } // Incluir password para excluirlo luego
             });
             return user;
-        } catch (error) {
+        } catch {
             throw new UnauthorizedException('Invalid or expired token');
         }
     }
 
-    async ResetPassword(email: string, oldPassword: string, newPassword: string) {
+    async ChangePassword(userId: string, oldPassword: string, newPassword: string) {
+        if (!userId) {
+            throw new UnauthorizedException('Invalid or expired token');
+        }
+        if (!oldPassword || !newPassword) {
+            throw new BadRequestException('Datos de entrada inválidos');
+        }
+        if (newPassword.length < 6) {
+            throw new BadRequestException('La nueva contraseña debe tener al menos 6 caracteres');
+        }
+        if (oldPassword === newPassword) {
+            throw new BadRequestException('La nueva contraseña no puede ser igual a la anterior');
+        }
+
         try {
             const user = await this.prisma.users.findUnique({
-                where: { email }
+                where: { id: userId }
             });
             if (!user) {
                 throw new NotFoundException('User not found');
             }
+
             const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
             if (!isOldPasswordValid) {
                 throw new BadRequestException('Invalid old password');
             }
+
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             await this.prisma.users.update({
-                where: { email },
+                where: { id: user.id },
                 data: { password: hashedPassword }
             });
+
+            return { message: 'Contraseña actualizada correctamente' };
         } catch (error) {
-            throw error instanceof NotFoundException ? error : new BadRequestException(error.message);
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
+                throw error;
+            }
+            throw new BadRequestException((error as Error).message);
         }
     }
 

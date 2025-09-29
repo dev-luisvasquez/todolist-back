@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers } from '@nestjs/common';
+import { Controller, Post, Body, Headers, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/user.dto';
 import { AuthDto, LoginResponseDto } from './dto/auth.dto';
@@ -10,8 +10,10 @@ import {
     ApiHeader,
     ApiBadRequestResponse,
     ApiUnauthorizedResponse,
-    ApiNotFoundResponse
+    ApiNotFoundResponse,
+    ApiBearerAuth,
 } from '@nestjs/swagger';
+import { AuthenticatedRequest } from './interfaces/auth.interface';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -167,4 +169,49 @@ export class AuthController {
     async requestPasswordRecovery(@Body() body: { email: string }) {
         return this.authService.RequestPasswordRecovery(body.email);
     }
-}
+
+    @Post('change-password')
+    @ApiOperation({
+        summary: 'Cambiar contraseña',
+        description: 'Cambia la contraseña del usuario autenticado'
+    })
+    @ApiBearerAuth()
+    @ApiBody({
+        description: 'Datos de la nueva contraseña',
+        schema: {
+            type: 'object',
+            properties: {
+                oldPassword: {
+                    type: 'string',
+                    example: 'oldPassword123',
+                    minLength: 6
+                },
+                newPassword: {
+                    type: 'string',
+                    example: 'newPassword123',
+                    minLength: 6
+                }
+            },
+            required: ['oldPassword', 'newPassword']
+        }
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Contraseña cambiada exitosamente'
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Token de acceso inválido o expirado'
+    })
+    @ApiBadRequestResponse({
+        description: 'Datos de entrada inválidos'
+    })
+    async changePassword(
+        @Req() req: AuthenticatedRequest,
+        @Body() body: { oldPassword: string; newPassword: string }
+    ) {
+        if (!req.user?.id) {
+            throw new UnauthorizedException('Token de acceso inválido o expirado');
+        }
+        return this.authService.ChangePassword(String(req.user.id), body.oldPassword, body.newPassword);
+    }
+};
