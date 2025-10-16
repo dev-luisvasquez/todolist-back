@@ -13,6 +13,7 @@ async uploadImage(file: Express.Multer.File, folder?: string, oldPublicId?: stri
 ```
 
 **Parámetros:**
+
 - `file`: Archivo de imagen de Express.Multer
 - `folder`: Carpeta opcional donde almacenar el archivo
 - `oldPublicId`: Public ID de la imagen anterior a eliminar (opcional)
@@ -26,6 +27,7 @@ async uploadImageAndReplaceOld(file: Express.Multer.File, folder?: string, oldIm
 ```
 
 **Parámetros:**
+
 - `file`: Archivo de imagen de Express.Multer
 - `folder`: Carpeta opcional donde almacenar el archivo
 - `oldImageUrl`: URL completa de la imagen anterior a eliminar (opcional)
@@ -45,11 +47,13 @@ extractPublicIdFromUrl(url: string): string | null
 Nuevo endpoint para subir una imagen y eliminar la anterior automáticamente.
 
 **Parámetros del formulario:**
+
 - `file`: Archivo de imagen (requerido)
 - `folder`: Carpeta de destino (opcional)
 - `oldImageUrl`: URL de la imagen anterior a eliminar (opcional)
 
 **Respuesta:**
+
 ```json
 {
   "message": "File uploaded successfully and old image removed",
@@ -68,21 +72,21 @@ Nuevo endpoint para subir una imagen y eliminar la anterior automáticamente.
 @UseGuards(AuthGuard)
 @UseInterceptors(FileInterceptor('file'))
 async updateUserAvatar(
-    @Request() req: any, 
+    @Request() req: any,
     @UploadedFile() file: Express.Multer.File
 ) {
     const userId = req.user.id;
-    
+
     // Obtener el usuario actual para obtener el avatar anterior
     const currentUser = await this.usersService.getUserById(userId);
     const oldAvatarUrl = currentUser?.avatar;
 
     // Subir nueva imagen y eliminar la anterior
     const uploadResult = await this.filesService.uploadImageAndReplaceOld(
-        file, 
-        'todolist/avatars', 
-        oldAvatarUrl && oldAvatarUrl !== 'URL_AVATAR_POR_DEFECTO' 
-            ? oldAvatarUrl 
+        file,
+        'todolist/avatars',
+        oldAvatarUrl && oldAvatarUrl !== 'URL_AVATAR_POR_DEFECTO'
+            ? oldAvatarUrl
             : undefined // No eliminar el avatar por defecto
     );
 

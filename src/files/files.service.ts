@@ -24,7 +24,11 @@ export class FilesService {
    * @returns Resultado de la subida con URLs y metadata
    */
 
-  async uploadImage(file: Express.Multer.File, folder?: string, oldPublicId?: string): Promise<any> {
+  async uploadImage(
+    file: Express.Multer.File,
+    folder?: string,
+    oldPublicId?: string,
+  ): Promise<any> {
     try {
       // Si se proporciona un oldPublicId, eliminar la imagen anterior primero
       if (oldPublicId) {
@@ -32,7 +36,10 @@ export class FilesService {
           await this.deleteImage(oldPublicId);
           console.log(`Imagen anterior eliminada: ${oldPublicId}`);
         } catch (error) {
-          console.warn(`No se pudo eliminar la imagen anterior (${oldPublicId}):`, error.message);
+          console.warn(
+            `No se pudo eliminar la imagen anterior (${oldPublicId}):`,
+            error.message,
+          );
           // Continúa con la subida aunque no se haya podido eliminar la anterior
         }
       }
@@ -49,13 +56,15 @@ export class FilesService {
           (error, result) => {
             if (error) {
               console.error('Cloudinary upload error:', error);
-              reject(new Error(`Error uploading image: ${error.message || error}`));
+              reject(
+                new Error(`Error uploading image: ${error.message || error}`),
+              );
             } else {
               resolve(result);
             }
-          }
+          },
         );
-        
+
         // Manejar errores del stream
         uploadStream.on('error', (error) => {
           console.error('Upload stream error:', error);
@@ -121,8 +130,11 @@ export class FilesService {
     });
   }
 
- 
-  async uploadImageAndReplaceOld(file: Express.Multer.File, folder?: string, oldImageUrl?: string): Promise<any> {
+  async uploadImageAndReplaceOld(
+    file: Express.Multer.File,
+    folder?: string,
+    oldImageUrl?: string,
+  ): Promise<any> {
     let oldPublicId: string | undefined = undefined;
 
     // Si se proporciona una URL anterior, extraer el publicId
@@ -150,11 +162,11 @@ export class FilesService {
       // Formato típico: https://res.cloudinary.com/cloud_name/image/upload/version/folder/public_id.extension
       const regex = /\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/;
       const match = url.match(regex);
-      
+
       if (match && match[1]) {
         return match[1];
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error extracting public ID from URL:', error);

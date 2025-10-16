@@ -6,13 +6,13 @@ export class UploadFileDto {
     type: 'string',
     format: 'binary',
     description: 'Archivo de imagen a subir',
-    example: 'imagen.jpg'
+    example: 'imagen.jpg',
   })
   file: any;
 
   @ApiPropertyOptional({
     description: 'Carpeta donde se almacenará el archivo',
-    example: 'todolist/avatars'
+    example: 'todolist/avatars',
   })
   @IsOptional()
   @IsString()
@@ -24,13 +24,13 @@ export class UploadFileWithReplaceDto {
     type: 'string',
     format: 'binary',
     description: 'Archivo de imagen a subir',
-    example: 'imagen.jpg'
+    example: 'imagen.jpg',
   })
   file: any;
 
   @ApiPropertyOptional({
     description: 'Carpeta donde se almacenará el archivo',
-    example: 'todolist/avatars'
+    example: 'todolist/avatars',
   })
   @IsOptional()
   @IsString()
@@ -38,7 +38,8 @@ export class UploadFileWithReplaceDto {
 
   @ApiPropertyOptional({
     description: 'URL de la imagen anterior a eliminar',
-    example: 'https://res.cloudinary.com/demo/image/upload/v1234567890/old-image.jpg'
+    example:
+      'https://res.cloudinary.com/demo/image/upload/v1234567890/old-image.jpg',
   })
   @IsOptional()
   @IsString()
@@ -48,7 +49,7 @@ export class UploadFileWithReplaceDto {
 export class UploadFromUrlDto {
   @ApiProperty({
     description: 'URL de la imagen a subir',
-    example: 'https://example.com/image.jpg'
+    example: 'https://example.com/image.jpg',
   })
   @IsUrl()
   @IsNotEmpty()
@@ -56,7 +57,7 @@ export class UploadFromUrlDto {
 
   @ApiPropertyOptional({
     description: 'ID público personalizado para la imagen',
-    example: 'mi-imagen-personalizada'
+    example: 'mi-imagen-personalizada',
   })
   @IsOptional()
   @IsString()
@@ -66,25 +67,27 @@ export class UploadFromUrlDto {
 export class FileResponseDto {
   @ApiProperty({
     description: 'Mensaje de confirmación',
-    example: 'File uploaded successfully'
+    example: 'File uploaded successfully',
   })
   message: string;
 
   @ApiProperty({
     description: 'URL segura de la imagen subida',
-    example: 'https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg'
+    example:
+      'https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg',
   })
   url: string;
 
   @ApiProperty({
     description: 'ID público de la imagen en Cloudinary',
-    example: 'todolist/sample_abc123'
+    example: 'todolist/sample_abc123',
   })
   publicId: string;
 
   @ApiProperty({
     description: 'URL optimizada de la imagen',
-    example: 'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto/sample.jpg'
+    example:
+      'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto/sample.jpg',
   })
   optimizedUrl: string;
 }
@@ -92,7 +95,8 @@ export class FileResponseDto {
 export class OptimizedUrlResponseDto {
   @ApiProperty({
     description: 'URL optimizada de la imagen',
-    example: 'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto/sample.jpg'
+    example:
+      'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto/sample.jpg',
   })
   optimizedUrl: string;
 }
@@ -100,7 +104,8 @@ export class OptimizedUrlResponseDto {
 export class TransformedUrlResponseDto {
   @ApiProperty({
     description: 'URL transformada de la imagen con dimensiones específicas',
-    example: 'https://res.cloudinary.com/demo/image/upload/c_auto,g_auto,w_300,h_200/sample.jpg'
+    example:
+      'https://res.cloudinary.com/demo/image/upload/c_auto,g_auto,w_300,h_200/sample.jpg',
   })
   transformedUrl: string;
 }
@@ -108,13 +113,13 @@ export class TransformedUrlResponseDto {
 export class DeleteFileResponseDto {
   @ApiProperty({
     description: 'Mensaje de confirmación',
-    example: 'Image deleted successfully'
+    example: 'Image deleted successfully',
   })
   message: string;
 
   @ApiProperty({
     description: 'Resultado de la operación de eliminación',
-    example: { result: 'ok' }
+    example: { result: 'ok' },
   })
   result: any;
 }

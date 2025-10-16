@@ -1,4 +1,8 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Response, NextFunction } from 'express';
 import { AuthService } from './auth.service';
 import { AuthenticatedRequest } from './interfaces/auth.interface';
@@ -8,7 +12,8 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly authService: AuthService) {}
 
   async use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    const authHeader = (req.headers['authorization'] || req.headers['Authorization']) as string | undefined;
+    const authHeader = (req.headers['authorization'] ||
+      req.headers['Authorization']) as string | undefined;
     if (!authHeader) {
       throw new UnauthorizedException('Encabezado Authorization no encontrado');
     }

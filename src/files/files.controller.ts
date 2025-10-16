@@ -39,17 +39,19 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: 'Subir archivo de imagen',
-    description: 'Permite subir un archivo de imagen al servidor. Acepta formatos: JPEG, PNG, GIF, WebP. Si se proporciona oldImageUrl, eliminará automáticamente la imagen anterior.'
+    description:
+      'Permite subir un archivo de imagen al servidor. Acepta formatos: JPEG, PNG, GIF, WebP. Si se proporciona oldImageUrl, eliminará automáticamente la imagen anterior.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Archivo de imagen, carpeta opcional y URL de imagen anterior opcional para reemplazo',
+    description:
+      'Archivo de imagen, carpeta opcional y URL de imagen anterior opcional para reemplazo',
     type: UploadFileWithReplaceDto,
   })
-  
   @ApiResponse({
     status: 201,
-    description: 'Archivo subido exitosamente (y imagen anterior eliminada si se proporcionó)',
+    description:
+      'Archivo subido exitosamente (y imagen anterior eliminada si se proporcionó)',
     type: FileResponseDto,
   })
   @ApiBadRequestResponse({
@@ -58,10 +60,13 @@ export class FilesController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'string', example: 'Only image files are allowed' },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'string',
+          example: 'Only image files are allowed',
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   @ApiInternalServerErrorResponse({
     description: 'Error interno del servidor durante la subida',
@@ -81,11 +86,15 @@ export class FilesController {
     }
 
     try {
-      const result = oldImageUrl 
-        ? await this.filesService.uploadImageAndReplaceOld(file, folder, oldImageUrl)
+      const result = oldImageUrl
+        ? await this.filesService.uploadImageAndReplaceOld(
+            file,
+            folder,
+            oldImageUrl,
+          )
         : await this.filesService.uploadImage(file, folder);
-      
-      const message = oldImageUrl 
+
+      const message = oldImageUrl
         ? 'File uploaded successfully and old image removed'
         : 'File uploaded successfully';
 
@@ -103,7 +112,7 @@ export class FilesController {
   @Post('upload-from-url')
   @ApiOperation({
     summary: 'Subir imagen desde URL',
-    description: 'Permite subir una imagen directamente desde una URL externa'
+    description: 'Permite subir una imagen directamente desde una URL externa',
   })
   @ApiBody({
     description: 'URL de la imagen y ID público opcional',
@@ -121,9 +130,9 @@ export class FilesController {
       properties: {
         statusCode: { type: 'number', example: 400 },
         message: { type: 'string', example: 'Image URL is required' },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   async uploadFromUrl(
     @Body('imageUrl') imageUrl: string,
@@ -134,7 +143,10 @@ export class FilesController {
     }
 
     try {
-      const result = await this.filesService.uploadImageFromUrl(imageUrl, publicId);
+      const result = await this.filesService.uploadImageFromUrl(
+        imageUrl,
+        publicId,
+      );
       return {
         message: 'Image uploaded successfully from URL',
         url: result.secure_url,
@@ -149,12 +161,13 @@ export class FilesController {
   @Get('optimized/:publicId')
   @ApiOperation({
     summary: 'Obtener URL optimizada',
-    description: 'Obtiene una URL optimizada de una imagen existente con formato y calidad automáticos'
+    description:
+      'Obtiene una URL optimizada de una imagen existente con formato y calidad automáticos',
   })
   @ApiParam({
     name: 'publicId',
     description: 'ID público de la imagen en Cloudinary',
-    example: 'todolist/sample_abc123'
+    example: 'todolist/sample_abc123',
   })
   @ApiResponse({
     status: 200,
@@ -170,22 +183,23 @@ export class FilesController {
   @Get('transformed/:publicId/:width/:height')
   @ApiOperation({
     summary: 'Obtener URL transformada con dimensiones',
-    description: 'Obtiene una URL de imagen transformada con ancho y alto específicos'
+    description:
+      'Obtiene una URL de imagen transformada con ancho y alto específicos',
   })
   @ApiParam({
     name: 'publicId',
     description: 'ID público de la imagen en Cloudinary',
-    example: 'todolist/sample_abc123'
+    example: 'todolist/sample_abc123',
   })
   @ApiParam({
     name: 'width',
     description: 'Ancho deseado en píxeles',
-    example: '300'
+    example: '300',
   })
   @ApiParam({
     name: 'height',
     description: 'Alto deseado en píxeles',
-    example: '200'
+    example: '200',
   })
   @ApiResponse({
     status: 200,
@@ -198,10 +212,13 @@ export class FilesController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'string', example: 'Width and height must be valid numbers' },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'string',
+          example: 'Width and height must be valid numbers',
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   getTransformedUrl(
     @Param('publicId') publicId: string,
@@ -210,7 +227,7 @@ export class FilesController {
   ) {
     const w = parseInt(width);
     const h = parseInt(height);
-    
+
     if (isNaN(w) || isNaN(h)) {
       throw new BadRequestException('Width and height must be valid numbers');
     }
@@ -223,12 +240,12 @@ export class FilesController {
   @Delete(':publicId')
   @ApiOperation({
     summary: 'Eliminar imagen',
-    description: 'Elimina una imagen del servidor usando su ID público'
+    description: 'Elimina una imagen del servidor usando su ID público',
   })
   @ApiParam({
     name: 'publicId',
     description: 'ID público de la imagen a eliminar',
-    example: 'todolist/sample_abc123'
+    example: 'todolist/sample_abc123',
   })
   @ApiResponse({
     status: 200,
@@ -241,10 +258,13 @@ export class FilesController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'string', example: 'Delete failed: Image not found' },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'string',
+          example: 'Delete failed: Image not found',
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   async deleteImage(@Param('publicId') publicId: string) {
     try {

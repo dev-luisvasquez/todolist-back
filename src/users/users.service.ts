@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async createUser(data: CreateUserDto) {
     try {
@@ -18,7 +18,9 @@ export class UsersService {
           email: data.email,
           birthday: data.birthday !== undefined ? data.birthday : undefined,
           password: data.password,
-          avatar: data.avatar || 'https://res.cloudinary.com/dybx8epyl/image/upload/v1758838963/avatar/azzr32udriidmnar14p7.jpg', // Avatar por defecto
+          avatar:
+            data.avatar ||
+            'https://res.cloudinary.com/dybx8epyl/image/upload/v1758838963/avatar/azzr32udriidmnar14p7.jpg', // Avatar por defecto
         },
       });
     } catch (error) {
